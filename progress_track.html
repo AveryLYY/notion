@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance PhD 路线图时间轴</title>
+<style>
+  body {
+    font-family: "Inter", "Noto Sans SC", sans-serif;
+    background: #fafafa;
+    color: #222;
+    margin: 0;
+    padding: 1.2rem;
+  }
+
+  h1 {
+    text-align: center;
+    color: #1a237e;
+  }
+
+  .progress-container {
+    background: #ddd;
+    height: 22px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 1rem auto;
+    max-width: 600px;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #4caf50, #81c784);
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  .timeline {
+    margin-top: 2rem;
+    border-left: 3px solid #1976d2;
+    padding-left: 1.5rem;
+  }
+
+  .task {
+    position: relative;
+    margin-bottom: 1.5rem;
+    padding-left: 0.5rem;
+  }
+
+  .task::before {
+    content: "";
+    position: absolute;
+    left: -11px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    background: #1976d2;
+    border-radius: 50%;
+  }
+
+  .task.completed::before {
+    background: #4caf50;
+  }
+
+  .task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .phase {
+    font-weight: 600;
+    color: #0d47a1;
+  }
+
+  .priority {
+    font-size: 0.8rem;
+    border-radius: 10px;
+    padding: 2px 8px;
+    background: #e3f2fd;
+    color: #0d47a1;
+  }
+
+  .task input[type="checkbox"] {
+    margin-right: 8px;
+    accent-color: #2196f3;
+  }
+
+  .tag {
+    display: inline-block;
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    margin-right: 5px;
+  }
+
+  @media(max-width:600px) {
+    body { padding: 0.8rem; }
+    .phase { font-size: 0.95rem; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Finance PhD 研究时间轴与进度追踪</h1>
+<p style="text-align:center">🎯 2025–2029 欧洲硕士 & Finance PhD 准备路线</p>
+
+<div class="progress-container">
+  <div class="progress-bar" id="progress"></div>
+</div>
+<p style="text-align:center;color:#555;font-size:0.9rem;">
+  总体完成率：<span id="percent">0%</span>
+</p>
+
+<div class="timeline" id="timeline"></div>
+
+<script>
+const csv = `阶段,任务内容,截止日期,状态,优先级,标签
+2025 Q4,完成 GRE 考试 (Quant ≥167),2025-12-15,未开始,高,Academics
+2025 Q4,建立 GitHub 项目 #1（Event Study）,2025-12-31,进行中,高,Research
+2025 Q4,与导师沟通推荐信意向,2025-11-10,已完成,中,Application
+2025 Q4,开始 Real Analysis 学习（MIT OCW 18.100B）,2025-12-25,进行中,中,Mathematics
+2026 Q1,启动 GitHub 项目 #2（Behavioral / Corporate Bias）,2026-02-28,未开始,高,Research
+2026 Q1,草拟 SOP 初稿,2026-03-15,未开始,高,Application
+2026 Q1,整理 MSc 申请学校材料 (Tinbergen, Tilburg 等),2026-03-30,未开始,高,Application
+2026 Q1,完成语言考试 (TOEFL/IELTS),2026-04-10,未开始,中,Academics
+2026 Q2,复习 Econometrics (Wooldridge Ch.10–14),2026-06-01,未开始,中,Academics
+2026 Q2,撰写 GitHub README / Report 文档规范,2026-06-15,未开始,低,Research
+2026 Q3,定稿 SOP / CV / Transcript,2026-08-15,未开始,高,Application
+2026 Q3,联系推荐人提交推荐信,2026-09-15,未开始,高,Application
+2026 Q3,提交 Tinbergen / Tilburg / Frankfurt MSc 申请,2026-11-01,未开始,高,Application
+2026 Q4,提交 Mannheim / Bonn / Aalto MSc 申请,2026-12-15,未开始,中,Application
+2027 Q1,更新 GitHub 项目 log.md（维护科研公开进展）,2027-01-30,未开始,中,Research
+2027 Q1,撰写 Working Paper 草稿（Behavioral Event Study）,2027-03-31,未开始,高,Research
+2027 Q2,跟进录取结果 / 奖学金 / 签证申请,2027-05-15,未开始,高,Application
+2027 Q2,准备入学行前资料（住宿 / 银行 / 文件）,2027-07-01,未开始,中,Logistics
+2027 Q3,入读欧洲研究型 MSc（Tinbergen 等）,2027-09-01,计划中,高,Academics
+2027 Q4,完成 MSc 第一个 Research Seminar,2027-12-10,计划中,高,Research
+2028 Q1,进行 MSc Thesis Proposal,2028-03-01,计划中,高,Research
+2028 Q2,参与导师研究项目 / RA 职位,2028-07-01,计划中,高,Experience
+2028 Q3,准备 Finance PhD 申请材料（美国/欧洲）,2028-10-15,计划中,高,Application
+2028 Q4,提交 PhD 申请并准备面试,2028-12-20,计划中,高,Application
+2029 Q1,跟进 PhD 录取结果,2029-03-01,计划中,高,Application
+2029 Q2,规划论文投稿或 conference 展示,2029-06-15,计划中,中,Research
+2029 Q3,办理 PhD 入读手续,2029-09-01,计划中,高,Application
+2029 Q4,正式入读 Finance PhD,2029-10-01,计划中,高,Milestone`;
+
+function parseCSV(text) {
+  const [header, ...rows] = text.trim().split("\n");
+  const keys = header.split(",");
+  return rows.map(line => {
+    const values = line.split(",");
+    const obj = {};
+    keys.forEach((k, i) => obj[k.trim()] = values[i] ? values[i].trim() : "");
+    return obj;
+  });
+}
+
+const tasks = parseCSV(csv);
+const container = document.getElementById("timeline");
+
+tasks.sort((a,b)=> new Date(a["截止日期"]) - new Date(b["截止日期"]));
+
+tasks.forEach(task => {
+  const div = document.createElement("div");
+  div.classList.add("task");
+  if(task["状态"] === "已完成") div.classList.add("completed");
+
+  const header = document.createElement("div");
+  header.className = "task-header";
+  header.innerHTML = `
+    <span class="phase">${task["阶段"]}</span>
+    <span class="priority">优先级：${task["优先级"]}</span>
+  `;
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.checked = task["状态"] === "已完成";
+  checkbox.addEventListener("change", ()=> {
+    if(checkbox.checked) {
+      div.classList.add("completed");
+      task["状态"] = "已完成";
+    } else {
+      div.classList.remove("completed");
+      task["状态"] = "未开始";
+    }
+    updateProgress();
+  });
+
+  const content = document.createElement("p");
+  content.innerHTML = `<label>${checkbox.outerHTML}${task["任务内容"]}</label><br>
+    <small>🕓 截止：${task["截止日期"]}</small>`;
+
+  const tagsDiv = document.createElement("div");
+  task["标签"].split("/|,|;").forEach(tag => {
+    const t = document.createElement("span");
+    t.className = "tag";
+    t.textContent = tag.trim();
+    tagsDiv.appendChild(t);
+  });
+
+  div.appendChild(header);
+  div.appendChild(content);
+  div.appendChild(tagsDiv);
+  container.appendChild(div);
+});
+
+function updateProgress(){
+  const all = tasks.length;
+  const done = tasks.filter(t => t["状态"] === "已完成").length;
+  const percent = Math.round((done/all)*100);
+  document.getElementById("progress").style.width = percent + "%";
+  document.getElementById("percent").textContent = percent + "%";
+}
+
+updateProgress();
+</script>
+
+</body>
+</html>
